@@ -74,37 +74,32 @@ const ELEM_ATTR_MAP = {
   img: {src: 'src', alt: 'alt'},
 };
 
+const getEntityData = (tagName: string, element: DOMElement) => {
+  let data = {};
+  if (ELEM_ATTR_MAP.hasOwnProperty(tagName)) {
+    let attrMap = ELEM_ATTR_MAP[tagName];
+    for (let attr of Object.keys(attrMap)) {
+      let dataKey = attrMap[attr];
+      let dataValue = element.getAttribute(attr);
+      if (dataValue != null) {
+        data[dataKey] = dataValue;
+      }
+    }
+  }
+  return data;
+};
+
 // Functions to convert elements to entities.
 const ELEM_TO_ENTITY = {
   a(tagName: string, element: DOMElement): ?string {
-    let data = {};
-    if (ELEM_ATTR_MAP.hasOwnProperty(tagName)) {
-      let attrMap = ELEM_ATTR_MAP[tagName];
-      for (let attr of Object.keys(attrMap)) {
-        let dataKey = attrMap[attr];
-        let dataValue = element.getAttribute(attr);
-        if (dataValue != null) {
-          data[dataKey] = dataValue;
-        }
-      }
-    }
+    let data = getEntityData(tagName, element);
     // Don't add `<a>` elements with no href.
     if (data.url != null) {
       return Entity.create(ENTITY_TYPE.LINK, 'MUTABLE', data);
     }
   },
   img(tagName: string, element: DOMElement): ?string {
-    let data = {};
-    if (ELEM_ATTR_MAP.hasOwnProperty(tagName)) {
-      let attrMap = ELEM_ATTR_MAP[tagName];
-      for (let attr of Object.keys(attrMap)) {
-        let dataKey = attrMap[attr];
-        let dataValue = element.getAttribute(attr);
-        if (dataValue != null) {
-          data[dataKey] = dataValue;
-        }
-      }
-    }
+    let data = getEntityData(tagName, element);
     // Don't add `<img>` elements with no src.
     if (data.src != null) {
       return Entity.create(ENTITY_TYPE.IMAGE, 'MUTABLE', data);
