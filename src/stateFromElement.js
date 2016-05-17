@@ -71,6 +71,7 @@ const ZERO_WIDTH_SPACE = '\u200B';
 // Map element attributes to entity data.
 const ELEM_ATTR_MAP = {
   a: {href: 'url', rel: 'rel', target: 'target', title: 'title'},
+  img: {src: 'src', alt: 'alt'},
 };
 
 // Functions to convert elements to entities.
@@ -90,6 +91,23 @@ const ELEM_TO_ENTITY = {
     // Don't add `<a>` elements with no href.
     if (data.url != null) {
       return Entity.create(ENTITY_TYPE.LINK, 'MUTABLE', data);
+    }
+  },
+  img(tagName: string, element: DOMElement): ?string {
+    let data = {};
+    if (ELEM_ATTR_MAP.hasOwnProperty(tagName)) {
+      let attrMap = ELEM_ATTR_MAP[tagName];
+      for (let attr of Object.keys(attrMap)) {
+        let dataKey = attrMap[attr];
+        let dataValue = element.getAttribute(attr);
+        if (dataValue != null) {
+          data[dataKey] = dataValue;
+        }
+      }
+    }
+    // Don't add `<img>` elements with no src.
+    if (data.src != null) {
+      return Entity.create(ENTITY_TYPE.IMAGE, 'MUTABLE', data);
     }
   },
 };
@@ -259,6 +277,9 @@ class BlockGenerator {
     block.entityStack.push(entityKey);
     if (element.childNodes != null) {
       Array.from(element.childNodes).forEach(this.processNode, this);
+    }
+    if (tagName === 'img') {
+      this.processText('~');
     }
     block.entityStack.pop();
     block.styleStack.pop();
