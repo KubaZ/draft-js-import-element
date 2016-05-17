@@ -135,6 +135,9 @@ const SPECIAL_ELEMENTS = {
   isindex: 1,
 };
 
+// These elements are special because they cannot contain childNodes.
+const SELF_CLOSING_ELEMENTS = {img: 1};
+
 class BlockGenerator {
   blockStack: Array<ParsedBlock>;
   blockList: Array<ParsedBlock>;
@@ -278,7 +281,7 @@ class BlockGenerator {
     if (element.childNodes != null) {
       Array.from(element.childNodes).forEach(this.processNode, this);
     }
-    if (tagName === 'img') {
+    if (SELF_CLOSING_ELEMENTS.hasOwnProperty(tagName)) {
       this.processText('~');
     }
     block.entityStack.pop();
