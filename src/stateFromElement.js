@@ -48,6 +48,7 @@ type ElementStyles = {[tagName: string]: Style};
 
 type Options = {
   elementStyles?: ElementStyles;
+  selfClosingElementsTextFragment?: string
 };
 
 const NO_STYLE = OrderedSet();
@@ -138,6 +139,7 @@ class BlockGenerator {
   blockList: Array<ParsedBlock>;
   depth: number;
   options: Options;
+  selfClosingElementsTextFragment: string;
 
   constructor(options: Options = {}) {
     this.options = options;
@@ -146,6 +148,7 @@ class BlockGenerator {
     this.blockStack = [];
     // This is a linear list of blocks that will form the output; for example
     // [p, li, li, blockquote].
+    this.selfClosingElementsTextFragment = options.selfClosingElementsTextFragment || '~';
     this.blockList = [];
     this.depth = 0;
   }
@@ -277,7 +280,7 @@ class BlockGenerator {
       Array.from(element.childNodes).forEach(this.processNode, this);
     }
     if (SELF_CLOSING_ELEMENTS.hasOwnProperty(tagName)) {
-      this.processText('~');
+      this.processText(this.selfClosingElementsTextFragment);
     }
     block.entityStack.pop();
     block.styleStack.pop();
