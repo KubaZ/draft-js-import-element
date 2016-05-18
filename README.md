@@ -24,12 +24,14 @@ const contentState = stateFromElement(element);
 You can optionally pass a second `Object` argument to `stateFromElement` with the following supported properties:
 
 - `elementStyles`: HTML element name as key, DraftJS style string as value. Example:
+- `selfClosingElementsTextFragment`: String placeholder to insert as text fragment for self closing elements like img, default is `~`. Example:
 
         stateFromElement(element, {
           elementStyles: {
             // Support `<sup>` (superscript) tag as style:
             'sup': 'SUPERSCRIPT'
-          }
+          },
+          selfClosingElementsTextFragment: '~'
         });
 
 ## License
